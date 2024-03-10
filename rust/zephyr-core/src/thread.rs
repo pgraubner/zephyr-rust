@@ -53,7 +53,7 @@ macro_rules! trait_impl {
             #[cfg(any(zephyr300, all(zephyr270, not(tls))))]
             fn k_current_get() -> crate::thread::ThreadId {
                 ThreadId(unsafe {
-                    NonNull::new_unchecked(zephyr_sys::syscalls::$context::z_current_get())
+                    NonNull::new_unchecked(zephyr_sys::syscalls::$context::k_sched_current_thread_query())
                 })
             }
 

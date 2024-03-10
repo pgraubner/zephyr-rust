@@ -182,7 +182,7 @@ pub mod kernel {
     fn check_align(ptr: *mut u8, layout: Layout) -> *mut u8 {
         if ptr as usize & (layout.align() - 1) != 0 {
             unsafe {
-                zephyr_sys::raw::printk(
+                zephyr_sys::raw::printf(
                     "Rust unsatisfied alloc alignment\n\0".as_ptr() as *const libc::c_char
                 );
             }

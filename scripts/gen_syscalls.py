@@ -145,10 +145,14 @@ def main():
     # where the syscall header is not included, so we must not include the
     # syscall header directly.
     whitelist = set(["kernel.h", "kobject.h", "device.h", "uart.h", "mutex.h", "errno_private.h", "eeprom.h", "time.h"])
-    includes = ["kernel.h", "device.h", "drivers/uart.h", "sys/mutex.h", "sys/errno_private.h", "drivers/eeprom.h", "posix/time.h"]
+    includes = ["kernel.h", "device.h", "drivers/uart.h", "sys/mutex.h", "sys/errno_private.h", "drivers/eeprom.h", "posix/time.h",
+                "sys/libc-hooks.h", "logging/log_ctrl.h", "sys/time_units.h", "sys/printk.h", "drivers/gpio.h"]
 
-    for match_group, fn in syscalls:
-        if fn not in whitelist:
+    #fp.write("\n#include <zephyr/logging/log_ctrl.h>")
+
+
+    for match_group, fn, to_emit in syscalls:
+        if fn not in whitelist and not to_emit:
             continue
         include = "syscalls/%s" % fn
         invocation, declaration = analyze_fn(match_group)
@@ -161,6 +165,7 @@ def main():
     with open(args.all_syscalls, "w") as fp:
         fp.write("#ifndef ZEPHYR_ALL_SYSCALLS_H\n")
         fp.write("#define ZEPHYR_ALL_SYSCALLS_H\n")
+        # fp.write("#define CONFIG_TIMER_READS_ITS_FREQUENCY_AT_RUNTIME\n")
         fp.write("#include <version.h>\n")
         fp.write("#if KERNEL_VERSION_MAJOR < 3\n")
         fp.write("\n".join(["#include <%s>" % fn for fn in includes]))
@@ -171,6 +176,7 @@ def main():
         # Hack because z_sys_mutex_kernel_lock is not defined in sys/mutex.h for !USERSPACE
         # This is the same on all zephyr versions as it exists in include/generated
         fp.write("#include <syscalls/mutex.h>\n")
+        # fp.write("#include <syscalls/posix_clock.h>\n")
         fp.write("\n")
         fp.write("".join(declarations))
         fp.write("\n#endif\n")

@@ -151,6 +151,29 @@ pub extern "C" fn rust_main() {
 
         zephyr::user::k_str_out("Hello from Rust userspace with forced user-mode syscall\n");
 
+        use std::collections::HashMap;
+        let mut map = HashMap::new();
+        map.insert(
+            "Adventures of Huckleberry Finn".to_string(),
+            "My favorite book.".to_string(),
+        );
+        map.insert(
+            "Grimms' Fairy Tales".to_string(),
+            "Masterpiece.".to_string(),
+        );
+        map.insert(
+            "Pride and Prejudice".to_string(),
+            "Very enjoyable.".to_string(),
+        );
+        map.insert(
+            "The Adventures of Sherlock Holmes".to_string(),
+            "Eye lyked it alot.".to_string(),
+        );
+        for (book, review) in &map {
+            println!("{book}: \"{review}\"");
+        }
+
+
         zephyr::any::k_str_out("Hello from Rust userspace with runtime-detect syscall\nNext call will crash if userspace is working.\n");
 
         // This will compile, but crash if CONFIG_USERSPACE is working
